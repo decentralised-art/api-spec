@@ -33,3 +33,5 @@ properties:
     format: int64
     minimum: 0
     description: Unix seconds after which the registry refuses the transaction.
+
+  signing: { $ref: "signingFields.yaml" }

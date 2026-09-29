@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+
+title: SigningFields
+type: object
+additionalProperties: false
+required: [type, nonce, maxFeePerGas, maxPriorityFeePerGas, value]
+description: >
+  Present only when the request set `relay`. Merged into `transaction`, these
+  complete an EIP-1559 transaction an owner can sign offline. Quantities are hex.
+
+properties:
+  type:
+    type: string
+    enum: ["0x2"]
+
+  nonce:
+    type: string
+    pattern: '^0x[0-9a-f]+$'
+    description: The owner's pending account nonce.
+
+  maxFeePerGas:
+    type: string
+    pattern: '^0x[0-9a-f]+$'
+
+  maxPriorityFeePerGas:
+    type: string
+    pattern: '^0x[0-9a-f]+$'
+
+  value:
+    type: string
+    enum: ["0x0"]
