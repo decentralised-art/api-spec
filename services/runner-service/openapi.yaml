@@ -19,11 +19,6 @@ tags:
     description: |
       Operations related to connector execution.
 
-components:
-  securitySchemes:
-    BearerAuth:
-      $ref: ../../shared/security.yaml#/components/securitySchemes/BearerAuth
-
 paths:
   /execute:
     options:
@@ -43,10 +38,8 @@ paths:
       description: >
         eth_call of Runner.gen on the configured runner, pinned to the block the
         server's execute block tag resolves to. The chain decides whether the
-        connector exists; the server's own registry is not consulted.
-
-      security:
-        - BearerAuth: []
+        connector exists; the server's own registry is not consulted. No login
+        is required: an eth_call sends no transaction and costs no gas.
 
       requestBody:
         required: true
@@ -63,12 +56,6 @@ paths:
 
         "400":
           description: Bad request, or execution rejected by the runner.
-          content:
-            application/json:
-              schema: { $ref: ../../shared/schemas/error.yaml }
-
-        "401":
-          description: Unauthorized
           content:
             application/json:
               schema: { $ref: ../../shared/schemas/error.yaml }
@@ -115,10 +102,7 @@ paths:
       description: >
         Execute a connector held by this server in its local simulation EVM.
         Covers entities created through the create endpoints before they are
-        published on chain.
-
-      security:
-        - BearerAuth: []
+        published on chain. No login is required.
 
       requestBody:
         required: true
@@ -140,12 +124,6 @@ paths:
 
         "400":
           description: Bad request, or execution rejected by the runner.
-          content:
-            application/json:
-              schema: { $ref: ../../shared/schemas/error.yaml }
-
-        "401":
-          description: Unauthorized
           content:
             application/json:
               schema: { $ref: ../../shared/schemas/error.yaml }
