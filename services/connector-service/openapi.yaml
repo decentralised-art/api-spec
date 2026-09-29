@@ -3,10 +3,10 @@ openapi: 3.0.3
 
 info:
   title: DCN Connector Service
-  version: 0.2.0
+  version: 0.4.0
   description: >
     Connector registry endpoints. Supports fetching a connector by name and
-    publishing a connector definition.
+    creating a local connector definition.
   license:
     name: MIT
     url: https://opensource.org/license/mit
@@ -97,8 +97,10 @@ paths:
     post:
       tags: [connector]
       operationId: POST_connector
-      summary: Publish connector
-      description: Publish a connector definition.
+      summary: Create connector
+      description: >
+        Compile and deploy a connector locally for simulation. The name must not be
+        reserved on chain. Publish it on chain through /publish/connector.
       security:
         - BearerAuth: []
       requestBody:
@@ -109,7 +111,7 @@ paths:
               $ref: "schemas/createConnectorRequest.yaml"
       responses:
         "201":
-          description: Published.
+          description: Created.
           content:
             application/json:
               schema:
@@ -126,6 +128,16 @@ paths:
             application/json:
               schema:
                 $ref: ../../shared/schemas/error.yaml
+        "409":
+          description: Name is reserved on chain.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+        "503":
+          description: Live on-chain name check is unavailable.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
         "500":
           description: Internal connector format lookup error.
           content:

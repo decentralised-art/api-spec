@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+
+title: EntityName
+type: string
+minLength: 1
+maxLength: 128
+pattern: '^[A-Za-z_][A-Za-z0-9_]*$'
+description: >
+  Entity name. Starts with a letter or '_', contains only letters, digits and '_',
+  at most 128 characters.

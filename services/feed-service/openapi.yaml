@@ -3,7 +3,7 @@ openapi: 3.0.3
 
 info:
   title: DCN Feed Service
-  version: 0.2.0
+  version: 0.4.0
   description: >
     Event-feed discovery endpoints for recently added or updated DCN chain
     entities. The feed exposes compact metadata for discovery and incremental

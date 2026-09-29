@@ -1,7 +1,30 @@
 # SPDX-License-Identifier: MIT
 
 title: ExecuteResponse
-type: array
-description: Execution result list.
-items:
-  $ref: "particlesResultItem.yaml"
+type: object
+additionalProperties: false
+required: [block_number, block_hash, runner, particles]
+description: >
+  On-chain execution result. Anyone can check it by calling the runner at the
+  same block.
+
+properties:
+  block_number:
+    type: integer
+    format: int64
+    minimum: 0
+    description: Block the call was pinned to.
+
+  block_hash:
+    type: string
+    description: Hash of that block.
+
+  runner:
+    type: string
+    description: Runner contract address that executed the call.
+
+  particles:
+    type: array
+    items:
+      $ref: "particlesResultItem.yaml"
+    description: Execution result list.

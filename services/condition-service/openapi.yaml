@@ -3,7 +3,7 @@ openapi: 3.0.3
 
 info:
   title: DCN Condition Service
-  version: 0.2.0
+  version: 0.4.0
   description: Condition registry endpoints.
   license:
     name: MIT
@@ -88,7 +88,10 @@ paths:
     post:
       tags: [condition]
       operationId: POST_condition
-      summary: Publish condition
+      summary: Create condition
+      description: >
+        Compile and deploy a condition locally for simulation. The name must not be
+        reserved on chain. Publish it on chain through /publish/condition.
       security:
         - BearerAuth: []
       requestBody:
@@ -98,7 +101,7 @@ paths:
             schema: { $ref: "schemas/createConditionRequest.yaml" }
       responses:
         "201":
-          description: Published.
+          description: Created.
           content:
             application/json:
               schema: { $ref: "schemas/createConditionResponse.yaml" }
@@ -109,6 +112,16 @@ paths:
               schema: { $ref: ../../shared/schemas/error.yaml }
         "401":
           description: Unauthorized.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+        "409":
+          description: Name is reserved on chain.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+        "503":
+          description: Live on-chain name check is unavailable.
           content:
             application/json:
               schema: { $ref: ../../shared/schemas/error.yaml }

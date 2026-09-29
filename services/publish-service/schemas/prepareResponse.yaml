@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: MIT
+
+title: PrepareResponse
+description: >
+  Either the transaction the owner's wallet must send, or, when the registry
+  already holds this exact publication, the existing registration.
+oneOf:
+  - $ref: "preparedPublication.yaml"
+  - $ref: "alreadyPublished.yaml"
+discriminator:
+  propertyName: status
+  mapping:
+    prepared: "preparedPublication.yaml"
+    published: "alreadyPublished.yaml"

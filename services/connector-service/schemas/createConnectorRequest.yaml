@@ -4,12 +4,11 @@ title: CreateConnectorRequest
 type: object
 additionalProperties: false
 required: [name, dimensions]
-description: Connector publish request payload.
+description: Connector create request payload.
 
 properties:
   name:
-    type: string
-    description: Connector name.
+    $ref: "../../../shared/schemas/entityName.yaml"
 
   dimensions:
     type: array

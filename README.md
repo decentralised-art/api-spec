@@ -21,6 +21,7 @@ consistent behavior across the entire ecosystem.
 - [Format Service](https://hypermusic-ai.github.io/dcn-api-spec/format-service.html)
 - [Feed Service](https://hypermusic-ai.github.io/dcn-api-spec/feed-service.html)
 - [Runner Service](https://hypermusic-ai.github.io/dcn-api-spec/runner-service.html)
+- [Publish Service](https://hypermusic-ai.github.io/dcn-api-spec/publish-service.html)
 
 ---
 

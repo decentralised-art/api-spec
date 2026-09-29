@@ -3,7 +3,7 @@ openapi: 3.0.3
 
 info:
   title: DCN Core Service
-  version: 0.2.0
+  version: 0.4.0
   description: Core endpoints
   license:
     name: MIT
