@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+
+title: SendRequest
+type: object
+required: [name, content_hash, raw_tx]
+description: Broadcast a publication transaction the owner signed offline.
+
+properties:
+  name:
+    $ref: "../../../shared/schemas/entityName.yaml"
+
+  content_hash:
+    $ref: "hash32.yaml"
+
+  raw_tx:
+    type: string
+    pattern: '^0x02[0-9a-fA-F]+$'
+    description: >
+      Signed type-2 transaction: `transaction` merged with `signing` from a relay
+      prepare, as `0x02 || rlp(...)`.

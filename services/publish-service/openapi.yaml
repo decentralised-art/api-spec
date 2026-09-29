@@ -3,12 +3,12 @@ openapi: 3.0.3
 
 info:
   title: DCN Publish Service
-  version: 0.4.0
+  version: 0.5.0
   description: >
     Owner-paid on-chain publication of entities created on this server. The
     server prepares an unsigned registry transaction, the owner's wallet sends
-    and pays for it, and the server confirms the receipt. The server never
-    holds a key for it. Enabled with `--publish`; otherwise every route answers
+    and pays for it (or signs it offline for the server to relay), and the
+    server confirms the receipt. The server never holds a key for it. Enabled with `--publish`; otherwise every route answers
     403 so a disabled server is distinguishable from a wrong URL.
   license:
     name: MIT
@@ -102,6 +102,75 @@ paths:
               schema: { $ref: "schemas/publishError.yaml" }
         "503":
           description: Chain provider or durable artifact storage failure.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+
+  /publish/{kind}/send:
+    parameters:
+      - $ref: "#/components/parameters/Kind"
+
+    options:
+      tags: [publish]
+      operationId: OPTIONS_publishSend
+      summary: CORS preflight
+      responses:
+        "204":
+          description: No content.
+
+    post:
+      tags: [publish]
+      operationId: POST_publishSend
+      summary: Relay publication
+      description: >
+        Broadcast a publication transaction the owner signed offline, through the
+        server's own chain provider, so the owner needs no RPC endpoint. The owner
+        still pays for it. The server forwards it only when the caller signed it,
+        it calls the configured registry on its chain with no value, it publishes
+        exactly the named entity with this content hash, and a dry run succeeds
+        within its gas limit. Confirm it with POST /publish/{kind}.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "schemas/sendRequest.yaml" }
+      responses:
+        "202":
+          description: Broadcast, or already held by the provider.
+          content:
+            application/json:
+              schema: { $ref: "schemas/sendResponse.yaml" }
+        "400":
+          description: >
+            Invalid request or transaction, a transaction other than this
+            publication, a dry-run revert, too little gas, or insufficient funds.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "403":
+          description: Publication is disabled on this server, or another account signed the transaction.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "404":
+          description: Unknown kind.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "409":
+          description: The account nonce is already used, or another transaction with it is pending. Prepare again.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "503":
+          description: Chain provider failure.
           content:
             application/json:
               schema: { $ref: "schemas/publishError.yaml" }

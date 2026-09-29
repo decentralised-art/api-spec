@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+
+title: SendResponse
+type: object
+additionalProperties: false
+required: [status, tx_hash]
+description: >
+  The provider accepted the transaction, or already held it. Confirm it with
+  POST /publish/{kind}.
+
+properties:
+  status:
+    type: string
+    enum: [pending]
+
+  tx_hash:
+    type: string
+    description: Hash of the broadcast transaction.
