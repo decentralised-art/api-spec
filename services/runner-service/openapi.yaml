@@ -3,8 +3,8 @@ openapi: 3.0.3
 
 info:
   title: DCN Runner Service
-  version: 0.2.0
-  description: Connector execution endpoint.
+  version: 0.4.0
+  description: Connector execution endpoints, on chain and in the local simulation EVM.
   license:
     name: MIT
     url: https://opensource.org/license/mit
@@ -39,8 +39,11 @@ paths:
     post:
       tags: [runner]
       operationId: POST_execute
-      summary: Execute
-      description: Execute a connector.
+      summary: Execute on chain
+      description: >
+        eth_call of Runner.gen on the configured runner, pinned to the block the
+        server's execute block tag resolves to. The chain decides whether the
+        connector exists; the server's own registry is not consulted.
 
       security:
         - BearerAuth: []
@@ -59,7 +62,7 @@ paths:
               schema: { $ref: "schemas/executeResponse.yaml" }
 
         "400":
-          description: Bad request
+          description: Bad request, or execution rejected by the runner.
           content:
             application/json:
               schema: { $ref: ../../shared/schemas/error.yaml }
@@ -71,13 +74,90 @@ paths:
               schema: { $ref: ../../shared/schemas/error.yaml }
 
         "404":
-          description: Connector not found
+          description: Connector not found in the runner's registry.
           content:
             application/json:
               schema: { $ref: ../../shared/schemas/error.yaml }
 
         "500":
-          description: Internal execution or response decoding error
+          description: Response decoding error.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+
+        "502":
+          description: Chain returned a malformed result.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+
+        "503":
+          description: On-chain execution is not configured, or the chain endpoint is unavailable.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+
+  /simulate:
+    options:
+      tags: [runner]
+      operationId: OPTIONS_simulate
+      summary: CORS preflight
+      description: CORS preflight
+
+      responses:
+        "204":
+          description: No content
+
+    post:
+      tags: [runner]
+      operationId: POST_simulate
+      summary: Simulate locally
+      description: >
+        Execute a connector held by this server in its local simulation EVM.
+        Covers entities created through the create endpoints before they are
+        published on chain.
+
+      security:
+        - BearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "schemas/executeRequest.yaml" }
+
+      responses:
+        "200":
+          description: Executed
+          content:
+            application/json:
+              schema:
+                title: SimulateResponse
+                type: array
+                description: Execution result list.
+                items:
+                  $ref: "schemas/particlesResultItem.yaml"
+
+        "400":
+          description: Bad request, or execution rejected by the runner.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+
+        "404":
+          description: Connector not found locally.
+          content:
+            application/json:
+              schema: { $ref: ../../shared/schemas/error.yaml }
+
+        "500":
+          description: Internal deployment, execution or response decoding error.
           content:
             application/json:
               schema: { $ref: ../../shared/schemas/error.yaml }

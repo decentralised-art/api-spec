@@ -8,8 +8,7 @@ description: Create transformation request
 
 properties:
   name:
-    type: string
-    description: Name of the transformation
+    $ref: "../../../shared/schemas/entityName.yaml"
 
   sol_src:
     type: string

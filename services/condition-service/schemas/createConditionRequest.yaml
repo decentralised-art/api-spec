@@ -8,8 +8,7 @@ description: Create condition request
 
 properties:
   name:
-    type: string
-    description: Name of the condition
+    $ref: "../../../shared/schemas/entityName.yaml"
 
   sol_src:
     type: string

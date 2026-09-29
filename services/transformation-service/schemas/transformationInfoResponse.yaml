@@ -3,20 +3,24 @@
 title: TransformationInfoResponse
 type: object
 additionalProperties: false
-required: [address, owner, name, sol_src]
-description: Transformation information
+required: [name, args_count, owner, address]
+description: >
+  Transformation information. The Solidity source is an execution input kept in local
+  storage or a verified artifact and is never served.
 
 properties:
-  address:
+  name:
     type: string
-    description: Deployed address placeholder (currently "0x0" in chain mode).
+    description: Transformation name.
+
+  args_count:
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+    description: Number of arguments (uint32), derived from the source and registered on chain.
 
   owner: { $ref: "../../../shared/schemas/address.yaml" }
 
-  name:
+  address:
     type: string
-    description: Transformation name
-
-  sol_src:
-    type: string
-    description: Solidity source
+    description: On-chain address once published; "0x0" for a local simulation entity.

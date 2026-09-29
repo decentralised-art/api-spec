@@ -3,7 +3,7 @@ openapi: 3.0.3
 
 info:
   title: DCN Auth Service
-  version: 0.2.0
+  version: 0.4.0
   description: Chain authentication endpoints.
   license:
     name: MIT

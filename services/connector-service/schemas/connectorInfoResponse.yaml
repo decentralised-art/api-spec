@@ -9,6 +9,7 @@ required:
     dimensions,
     condition_name,
     condition_args,
+    static_ri,
     owner,
     address,
     format_hash,
@@ -40,14 +41,14 @@ properties:
     type: object
     additionalProperties:
       $ref: "runningInstance.yaml"
-    description: Optional static running-instance map.
+    description: Static running-instance map keyed by decimal position; empty object when none.
 
   owner:
     $ref: "../../../shared/schemas/address.yaml"
 
   address:
     type: string
-    description: Deployed address placeholder (currently "0x0" in chain mode).
+    description: On-chain address once published; "0x0" for a local simulation entity.
 
   format_hash:
     type: string

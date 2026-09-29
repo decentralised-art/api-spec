@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: MIT
+
+title: PublishError
+type: object
+required: [message]
+description: Publication error. Optional fields appear only when relevant.
+
+properties:
+  message:
+    type: string
+    description: Human-readable message.
+
+  status:
+    type: string
+    enum: [pending]
+    description: Present on 202 while the transaction is not mined yet.
+
+  tx_hash:
+    type: string
+    description: Transaction the error refers to.
+
+  missing:
+    type: array
+    items: { type: string }
+    description: Connector dependencies absent from the target registry.
+
+  mismatched:
+    type: array
+    items: { type: string }
+    description: Connector dependencies registered with a different artifact.

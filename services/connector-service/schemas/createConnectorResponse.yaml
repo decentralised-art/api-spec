@@ -4,7 +4,7 @@ title: CreateConnectorResponse
 type: object
 additionalProperties: false
 required: [name, owner, address, format_hash]
-description: Connector publish response payload.
+description: Connector create response payload.
 
 properties:
   name:
@@ -16,7 +16,7 @@ properties:
 
   address:
     type: string
-    description: Deployed address placeholder (currently "0x0" in chain mode).
+    description: Always "0x0"; the entity is local until published through /publish/connector.
 
   format_hash:
     type: string
