@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+
+title: VersionResponse
+type: object
+additionalProperties: false
+required: [build_timestamp, version]
+description: Version information.
+
+properties:
+  build_timestamp:
+    type: string
+    description: ISO-8601 build timestamp of the running server
+    example: "2025-12-16T21:42:11Z"
+
+  version:
+    type: string
+    description: Human-readable API version
+    example: "0.4.0"

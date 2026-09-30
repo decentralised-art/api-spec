@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 
 # Root paths
 $RepoRoot = Resolve-Path "$PSScriptRoot\.."
-$ServicesDir = Join-Path $RepoRoot "services"
+$ChainDir = Join-Path $RepoRoot "apis/chain"
 $DocsDir = Join-Path $RepoRoot "docs"
 
 # Ensure output dir exists
@@ -20,21 +20,21 @@ if (Test-Path $LocalRedocly) {
     throw "redocly not found. Run npm ci or install it with: npm i -D @redocly/cli"
 }
 
-$GeneratedServices = @()
+$GeneratedGroups = @()
 
-Get-ChildItem -Path $ServicesDir -Directory | ForEach-Object {
+Get-ChildItem -Path $ChainDir -Directory | ForEach-Object {
 
-    $serviceName = $_.Name
+    $groupName = $_.Name
     $openapiFile = Join-Path $_.FullName "openapi.yaml"
-    $outputFile = Join-Path $DocsDir "$serviceName.html"
+    $outputFile = Join-Path $DocsDir "$groupName.html"
 
     if (-Not (Test-Path $openapiFile)) {
-        Write-Warning "Skipping $serviceName (no openapi.yaml)"
+        Write-Warning "Skipping $groupName (no openapi.yaml)"
         return
     }
 
-    Write-Host " → $serviceName" -ForegroundColor Green
-    $script:GeneratedServices += $serviceName
+    Write-Host " → $groupName" -ForegroundColor Green
+    $script:GeneratedGroups += $groupName
 
     & $Redocly lint `
         $openapiFile
@@ -42,12 +42,12 @@ Get-ChildItem -Path $ServicesDir -Directory | ForEach-Object {
     & $Redocly build-docs `
         $openapiFile `
         --output=$outputFile `
-        --title "DCN - $serviceName API"
+        --title "decentralised.art Chain - $groupName API"
 }
 
-$indexItems = $GeneratedServices | ForEach-Object {
-    $label = ($_ -replace "-service$", "") -replace "-", " "
-    "        <li><a href=`"$_.html`">$label service</a></li>"
+$indexItems = $GeneratedGroups | ForEach-Object {
+    $label = $_ -replace "-", " "
+    "        <li><a href=`"$_.html`">$label</a></li>"
 }
 
 $indexHtml = @"
@@ -56,7 +56,7 @@ $indexHtml = @"
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DCN API Specification</title>
+    <title>decentralised.art API Specification</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -126,8 +126,8 @@ $indexHtml = @"
   </head>
   <body>
     <main>
-      <h1>DCN API Specification</h1>
-      <p>OpenAPI reference documentation for the Decentralised Creative Network chain API services.</p>
+      <h1>decentralised.art API Specification</h1>
+      <p>OpenAPI reference documentation for the decentralised.art chain API.</p>
       <ul>
 $($indexItems -join "`n")
       </ul>

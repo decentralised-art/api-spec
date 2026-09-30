@@ -7,5 +7,5 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: |
-        JWT Bearer token issued by DCN Auth Service.
+        JWT Bearer token issued by the decentralised.art chain auth API.
         Header: Authorization: Bearer <access_token>

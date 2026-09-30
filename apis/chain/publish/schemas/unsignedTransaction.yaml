@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+
+title: UnsignedTransaction
+type: object
+additionalProperties: false
+required: [from, to, data, chainId, gas]
+description: >
+  Registry call ready for eth_sendTransaction; quantities are hex, as wallets
+  expect. The calldata carries an empty owner signature, which the registry
+  accepts because the owner is the sender.
+
+properties:
+  from:
+    $ref: "../../../../shared/schemas/address.yaml"
+
+  to:
+    $ref: "../../../../shared/schemas/address.yaml"
+
+  data:
+    type: string
+    description: Hex-encoded calldata.
+
+  chainId:
+    type: string
+    pattern: '^0x[0-9a-f]+$'
+    description: Chain id as a hex quantity.
+
+  gas:
+    type: string
+    pattern: '^0x[0-9a-f]+$'
+    description: Gas limit (estimate plus headroom) as a hex quantity.

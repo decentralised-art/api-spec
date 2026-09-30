@@ -1,0 +1,245 @@
+# SPDX-License-Identifier: MIT
+openapi: 3.0.3
+
+info:
+  title: decentralised.art Chain Publish API
+  version: 0.4.0
+  description: >
+    Owner-paid on-chain publication of entities created on this server. The
+    server prepares an unsigned registry transaction, the owner's wallet sends
+    and pays for it (or signs it offline for the server to relay), and the
+    server confirms the receipt. The server never holds a key for it. Enabled with `--publish`; otherwise every route answers
+    403 so a disabled server is distinguishable from a wrong URL.
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+
+servers:
+  - url: https://api.decentralised.art/chain
+
+security: []
+
+tags:
+  - name: publish
+    description: On-chain publication of transformations, conditions and connectors.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: ../../../shared/security.yaml#/components/securitySchemes/BearerAuth
+
+  parameters:
+    Kind:
+      name: kind
+      in: path
+      required: true
+      schema: { $ref: "schemas/entityKind.yaml" }
+      description: Kind of entity to publish. Any other value is 404.
+
+paths:
+  /publish/{kind}/prepare:
+    parameters:
+      - $ref: "#/components/parameters/Kind"
+
+    options:
+      tags: [publish]
+      operationId: OPTIONS_publishPrepare
+      summary: CORS preflight
+      responses:
+        "204":
+          description: No content.
+
+    post:
+      tags: [publish]
+      operationId: POST_publishPrepare
+      summary: Prepare publication
+      description: >
+        Rebuild the entity from the definition retained when it was created,
+        store its artifact durably, and return the unsigned registry transaction.
+        The caller must own the entity. A connector's dependencies must already
+        be registered with the artifacts it was built against; they are never
+        published recursively. Deterministic reverts (name taken, stale nonce,
+        identity mismatch) are reported here, before the owner pays.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "schemas/prepareRequest.yaml" }
+      responses:
+        "200":
+          description: Prepared transaction, or the existing identical publication.
+          content:
+            application/json:
+              schema: { $ref: "schemas/prepareResponse.yaml" }
+        "400":
+          description: Invalid request, the entity cannot be rebuilt, or the transaction would revert.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "403":
+          description: Publication is disabled on this server, or the caller does not own the entity.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "404":
+          description: Unknown kind, or no local definition of this entity exists.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "409":
+          description: >
+            The registry holds different content under this name, or connector
+            dependencies are `missing` or `mismatched`.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "503":
+          description: Chain provider or durable artifact storage failure.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+
+  /publish/{kind}/send:
+    parameters:
+      - $ref: "#/components/parameters/Kind"
+
+    options:
+      tags: [publish]
+      operationId: OPTIONS_publishSend
+      summary: CORS preflight
+      responses:
+        "204":
+          description: No content.
+
+    post:
+      tags: [publish]
+      operationId: POST_publishSend
+      summary: Relay publication
+      description: >
+        Broadcast a publication transaction the owner signed offline, through the
+        server's own chain provider, so the owner needs no RPC endpoint. The owner
+        still pays for it. The server forwards it only when the caller signed it,
+        it calls the configured registry on its chain with no value, it publishes
+        exactly the named entity with this content hash, and a dry run succeeds
+        within its gas limit. Confirm it with POST /publish/{kind}.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "schemas/sendRequest.yaml" }
+      responses:
+        "202":
+          description: Broadcast, or already held by the provider.
+          content:
+            application/json:
+              schema: { $ref: "schemas/sendResponse.yaml" }
+        "400":
+          description: >
+            Invalid request or transaction, a transaction other than this
+            publication, a dry-run revert, too little gas, or insufficient funds.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "403":
+          description: Publication is disabled on this server, or another account signed the transaction.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "404":
+          description: Unknown kind.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "409":
+          description: The account nonce is already used, or another transaction with it is pending. Prepare again.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "503":
+          description: Chain provider failure.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+
+  /publish/{kind}:
+    parameters:
+      - $ref: "#/components/parameters/Kind"
+
+    options:
+      tags: [publish]
+      operationId: OPTIONS_publish
+      summary: CORS preflight
+      responses:
+        "204":
+          description: No content.
+
+    post:
+      tags: [publish]
+      operationId: POST_publishConfirm
+      summary: Confirm publication
+      description: >
+        Look the transaction receipt up once. Repeat the request while it
+        answers 202; that is the status check. The registry projection of the
+        event, not this response, is what the read endpoints serve.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "schemas/confirmRequest.yaml" }
+      responses:
+        "201":
+          description: Mined and matched.
+          content:
+            application/json:
+              schema: { $ref: "schemas/confirmResponse.yaml" }
+        "202":
+          description: Transaction not mined yet (`status` is `pending`).
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "400":
+          description: Invalid request, the transaction reverted, or it registered something else.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "403":
+          description: Publication is disabled on this server.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "404":
+          description: Unknown kind.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "409":
+          description: The registry holds something else under this name.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }
+        "503":
+          description: Chain provider failure.
+          content:
+            application/json:
+              schema: { $ref: "schemas/publishError.yaml" }

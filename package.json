@@ -1,7 +1,8 @@
 {
+  "name": "decentralised-art-api-spec",
   "scripts": {
     "docs:generate": "bash tools/generate-docs.sh",
-    "lint:openapi": "redocly lint services/*/openapi.yaml"
+    "lint:openapi": "redocly lint apis/chain/*/openapi.yaml"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.25.2",
