@@ -15,16 +15,16 @@ contracts live in `apis/chain/<group>/openapi.yaml`.
 
 ## API Docs
 
-- [Core](https://hypermusic-ai.github.io/dcn-api-spec/core.html)
-- [Account](https://hypermusic-ai.github.io/dcn-api-spec/account.html)
-- [Auth](https://hypermusic-ai.github.io/dcn-api-spec/auth.html)
-- [Connector](https://hypermusic-ai.github.io/dcn-api-spec/connector.html)
-- [Transformation](https://hypermusic-ai.github.io/dcn-api-spec/transformation.html)
-- [Condition](https://hypermusic-ai.github.io/dcn-api-spec/condition.html)
-- [Format](https://hypermusic-ai.github.io/dcn-api-spec/format.html)
-- [Feed](https://hypermusic-ai.github.io/dcn-api-spec/feed.html)
-- [Runner](https://hypermusic-ai.github.io/dcn-api-spec/runner.html)
-- [Publish](https://hypermusic-ai.github.io/dcn-api-spec/publish.html)
+- [Core](https://decentralised-art.github.io/api-spec/core.html)
+- [Account](https://decentralised-art.github.io/api-spec/account.html)
+- [Auth](https://decentralised-art.github.io/api-spec/auth.html)
+- [Connector](https://decentralised-art.github.io/api-spec/connector.html)
+- [Transformation](https://decentralised-art.github.io/api-spec/transformation.html)
+- [Condition](https://decentralised-art.github.io/api-spec/condition.html)
+- [Format](https://decentralised-art.github.io/api-spec/format.html)
+- [Feed](https://decentralised-art.github.io/api-spec/feed.html)
+- [Runner](https://decentralised-art.github.io/api-spec/runner.html)
+- [Publish](https://decentralised-art.github.io/api-spec/publish.html)
 
 ---
 
