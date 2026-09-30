@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SERVICES_DIR="$REPO_ROOT/services"
+CHAIN_DIR="$REPO_ROOT/apis/chain"
 OUT_DIR="$REPO_ROOT/docs"
 
 # Ensure output dir exists
@@ -31,32 +31,32 @@ echo
 
 shopt -s nullglob
 found_any=0
-services=()
+groups=()
 
-for svc_dir in "$SERVICES_DIR"/*/; do
-  svc_name="$(basename "$svc_dir")"
-  spec="$svc_dir/openapi.yaml"
-  out="$OUT_DIR/${svc_name}.html"
+for group_dir in "$CHAIN_DIR"/*/; do
+  group_name="$(basename "$group_dir")"
+  spec="$group_dir/openapi.yaml"
+  out="$OUT_DIR/${group_name}.html"
 
   if [[ ! -f "$spec" ]]; then
-    echo "Skipping $svc_name (no openapi.yaml)"
+    echo "Skipping $group_name (no openapi.yaml)"
     continue
   fi
 
   found_any=1
-  services+=("$svc_name")
-  echo "→ $svc_name"
+  groups+=("$group_name")
+  echo "→ $group_name"
 
   # fail fast on invalid specs
   "$REDOCLY_BIN" lint "$spec"
 
   "$REDOCLY_BIN" build-docs "$spec" \
     --output="$out" \
-    --title "DCN – ${svc_name} API"
+    --title "decentralised.art Chain – ${group_name} API"
 done
 
 if [[ "$found_any" -eq 0 ]]; then
-  echo "ERROR: No OpenAPI specs found under $SERVICES_DIR/*/openapi.yaml" >&2
+  echo "ERROR: No chain API specs found under $CHAIN_DIR/*/openapi.yaml" >&2
   exit 2
 fi
 
@@ -68,7 +68,7 @@ index="$OUT_DIR/index.html"
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DCN API Specification</title>
+    <title>decentralised.art API Specification</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -138,15 +138,14 @@ index="$OUT_DIR/index.html"
   </head>
   <body>
     <main>
-      <h1>DCN API Specification</h1>
-      <p>OpenAPI reference documentation for the Decentralised Creative Network chain API services.</p>
+      <h1>decentralised.art API Specification</h1>
+      <p>OpenAPI reference documentation for the decentralised.art chain API.</p>
       <ul>
 HTML
 
-  for svc in "${services[@]}"; do
-    label="${svc%-service}"
-    label="${label//-/ }"
-    printf '        <li><a href="%s.html">%s service</a></li>\n' "$svc" "$label"
+  for group in "${groups[@]}"; do
+    label="${group//-/ }"
+    printf '        <li><a href="%s.html">%s</a></li>\n' "$group" "$label"
   done
 
   cat <<'HTML'

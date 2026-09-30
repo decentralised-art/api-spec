@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: MIT
+
+title: AlreadyPublished
+type: object
+additionalProperties: false
+required: [status, kind, name, address, owner, content_hash]
+description: The registry already holds this exact publication; nothing to send.
+
+properties:
+  status:
+    type: string
+    enum: [published]
+
+  kind: { $ref: "entityKind.yaml" }
+
+  name: { $ref: "../../../../shared/schemas/entityName.yaml" }
+
+  address:
+    $ref: "../../../../shared/schemas/address.yaml"
+
+  owner:
+    $ref: "../../../../shared/schemas/address.yaml"
+
+  content_hash: { $ref: "hash32.yaml" }

@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+
+title: ConditionInfoResponse
+type: object
+additionalProperties: false
+required: [name, args_count, owner, address]
+description: >
+  Condition information. The Solidity source is an execution input kept in local
+  storage or a verified artifact and is never served.
+
+properties:
+  name:
+    type: string
+    description: Condition name.
+
+  args_count:
+    type: integer
+    minimum: 0
+    maximum: 4294967295
+    description: Number of arguments (uint32), derived from the source and registered on chain.
+
+  owner: { $ref: "../../../../shared/schemas/address.yaml" }
+
+  address:
+    type: string
+    description: On-chain address once published; "0x0" for a local simulation entity.

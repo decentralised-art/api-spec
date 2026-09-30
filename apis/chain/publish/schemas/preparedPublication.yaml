@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: MIT
+
+title: PreparedPublication
+type: object
+additionalProperties: false
+required: [status, kind, name, transaction, address, content_hash, publication_nonce, deadline]
+description: The transaction the owner's wallet must send to publish the entity.
+
+properties:
+  status:
+    type: string
+    enum: [prepared]
+
+  kind: { $ref: "entityKind.yaml" }
+
+  name: { $ref: "../../../../shared/schemas/entityName.yaml" }
+
+  transaction: { $ref: "unsignedTransaction.yaml" }
+
+  address:
+    $ref: "../../../../shared/schemas/address.yaml"
+
+  content_hash: { $ref: "hash32.yaml" }
+
+  publication_nonce:
+    type: integer
+    format: int64
+    minimum: 0
+    description: Owner's publication nonce bound into the transaction.
+
+  deadline:
+    type: integer
+    format: int64
+    minimum: 0
+    description: Unix seconds after which the registry refuses the transaction.
+
+  signing: { $ref: "signingFields.yaml" }

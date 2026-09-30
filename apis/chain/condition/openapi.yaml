@@ -1,0 +1,127 @@
+# SPDX-License-Identifier: MIT
+openapi: 3.0.3
+
+info:
+  title: decentralised.art Chain Condition API
+  version: 0.4.0
+  description: Condition registry endpoints.
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+
+servers:
+  - url: https://api.decentralised.art/chain
+
+security: []
+
+tags:
+  - name: condition
+    description: Condition creation and inspection.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: ../../../shared/security.yaml#/components/securitySchemes/BearerAuth
+
+paths:
+  /condition/{name}:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        schema: { type: string }
+        description: Condition name.
+
+    head:
+      tags: [condition]
+      operationId: HEAD_condition
+      summary: Check condition existence
+      responses:
+        "200":
+          description: Exists.
+        "404":
+          description: Not found.
+
+    options:
+      tags: [condition]
+      operationId: OPTIONS_conditionByName
+      summary: CORS preflight
+      responses:
+        "204":
+          description: No content.
+
+    get:
+      tags: [condition]
+      operationId: GET_condition
+      summary: Get condition by name
+      responses:
+        "200":
+          description: Condition info.
+          content:
+            application/json:
+              schema: { $ref: "schemas/conditionInfoResponse.yaml" }
+        "400":
+          description: Invalid request.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }
+        "404":
+          description: Not found.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }
+        "500":
+          description: Internal condition serialization error.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }
+
+  /condition:
+    options:
+      tags: [condition]
+      operationId: OPTIONS_condition
+      summary: CORS preflight
+      responses:
+        "204":
+          description: No content.
+
+    post:
+      tags: [condition]
+      operationId: POST_condition
+      summary: Create condition
+      description: >
+        Compile and deploy a condition locally for simulation. The name must not be
+        reserved on chain. Publish it on chain through /publish/condition.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "schemas/createConditionRequest.yaml" }
+      responses:
+        "201":
+          description: Created.
+          content:
+            application/json:
+              schema: { $ref: "schemas/createConditionResponse.yaml" }
+        "400":
+          description: Invalid request.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }
+        "409":
+          description: Name is reserved on chain.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }
+        "503":
+          description: Live on-chain name check is unavailable.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }

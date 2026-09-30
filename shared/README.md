@@ -1,12 +1,11 @@
-# Shared Schemas for DCN API Specification
+# Shared Schemas for decentralised.art API Specification
 
-Common reusable components for all DCN service contracts.
+Common reusable components for decentralised.art API contracts.
 
-The `shared/` directory contains **canonical schema definitions** used across the  
-Decentralised Creative Network (DCN). These definitions ensure that services all  
-communicate using consistent data structures, error formats, metadata, and  
-primitive types.
+The `shared/` directory contains **canonical schema definitions** for
+decentralised.art. These definitions keep API contracts
+consistent in their data structures, error formats, metadata, and primitive types.
 
-These files are imported via `$ref` from individual service OpenAPI contracts.
+These files are imported via `$ref` from endpoint group OpenAPI contracts.
 
-Every service in `services/` may reference these files.
+Endpoint groups under `apis/` may reference these files.
