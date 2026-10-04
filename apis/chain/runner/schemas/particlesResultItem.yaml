@@ -15,4 +15,6 @@ properties:
     type: array
     items:
       type: integer
-    description: Output particle values for this path.
+      minimum: 0
+      maximum: 4294967295
+    description: Output particle values for this path (uint32).

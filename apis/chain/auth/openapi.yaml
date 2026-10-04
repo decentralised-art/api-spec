@@ -33,18 +33,61 @@ paths:
       operationId: GET_nonce
       summary: Get nonce
       description: >
-        Get a one-time nonce for an address. Sign `Login nonce: <nonce>` and
-        submit it to `/auth`.
+        Issue a one-time [EIP-4361](https://eips.ethereum.org/EIPS/eip-4361)
+        sign-in message for an address. Have the wallet sign `message` with
+        `personal_sign`, then submit the `nonce` and the signature to `/auth`
+        within five minutes. Each nonce can be redeemed once; requesting
+        another one does not invalidate those already issued.
+
+
+        The message names the site the user signs in through: the `origin`
+        query parameter when given; otherwise the request's `Origin` header
+        when it is one the server is configured with; otherwise the server's
+        first configured origin. Wallets that support EIP-4361 reject or warn
+        when the message names a different site from the one asking for the
+        signature, so a page should pass its own origin.
+
+      parameters:
+        - name: origin
+          in: query
+          required: false
+          allowReserved: true
+          schema:
+            type: string
+            example: https://decentralised.art
+          description: >
+            Origin of the page signing in, as `window.location.origin` gives
+            it, sent unencoded. Browsers send no `Origin` header on a
+            same-origin GET, so this is how a page served from a secondary
+            configured origin gets a message naming it. A value that is not a
+            configured origin is refused with 400.
+
+        - name: Origin
+          in: header
+          required: false
+          schema:
+            type: string
+            example: https://decentralised.art
+          description: >
+            Origin of the page signing in. Browsers send it on cross-origin
+            requests; it is ignored when the `origin` query parameter is given
+            or when it is not a configured origin.
 
       responses:
         "200":
-          description: Nonce returned
+          description: Sign-in message issued
           content:
             application/json:
               schema: { $ref: schemas/nonceResponse.yaml }
         
         "400":
-          description: Bad request
+          description: Invalid address, or an `origin` that is not a configured sign-in origin.
+          content:
+            application/json:
+              schema: { $ref: ../../../shared/schemas/error.yaml }
+
+        "503":
+          description: Too many sign-in messages are awaiting `/auth`; retry shortly.
           content:
             application/json:
               schema: { $ref: ../../../shared/schemas/error.yaml }
@@ -64,7 +107,10 @@ paths:
       tags: [auth]
       operationId: POST_auth
       summary: Authenticate
-      description: Authenticate using an address, the signed login message, and its signature.
+      description: >
+        Authenticate using an address, the nonce `/nonce` issued to it, and
+        the wallet's `personal_sign` signature of the message issued with that
+        nonce. The server checks the signature against the message it issued.
 
       requestBody:
         required: true
@@ -86,7 +132,10 @@ paths:
               schema: { $ref: schemas/authResponse.yaml }
 
         "400":
-          description: Invalid address, nonce, message, or signature.
+          description: >
+            Invalid request body, address, or signature; or a nonce that
+            `/nonce` did not issue to this address, has expired, or was
+            already redeemed.
           content:
             application/json:
               schema: { $ref: ../../../shared/schemas/error.yaml }

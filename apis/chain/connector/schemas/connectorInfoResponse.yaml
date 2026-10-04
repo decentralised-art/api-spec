@@ -35,6 +35,7 @@ properties:
     type: array
     items:
       type: integer
+      format: int32
     description: Condition arguments.
 
   static_ri:

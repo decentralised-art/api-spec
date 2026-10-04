@@ -15,4 +15,5 @@ properties:
     type: array
     items:
       type: integer
+      format: int32
     description: Transformation arguments. Omitted means no arguments.

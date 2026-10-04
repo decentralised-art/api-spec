@@ -3,7 +3,7 @@
 title: ExecuteResponse
 type: object
 additionalProperties: false
-required: [block_number, block_hash, runner, particles]
+required: [block_number, block_hash, runner, registry, particles]
 description: >
   On-chain execution result. Anyone can check it by calling the runner at the
   same block.
@@ -22,6 +22,10 @@ properties:
   runner:
     type: string
     description: Runner contract address that executed the call.
+
+  registry:
+    type: string
+    description: Registry contract address the runner looked the connector up in.
 
   particles:
     type: array

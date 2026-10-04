@@ -99,11 +99,11 @@ paths:
         in: path
         required: true
         schema: { $ref: ../../../shared/schemas/address.yaml }
-        description: <TODO>
+        description: Account address.
 
     options:
       tags: [account]
-      operationId: OPTIONS_account
+      operationId: OPTIONS_accountInfo
       summary: CORS preflight
       description: CORS preflight
 
@@ -113,7 +113,7 @@ paths:
 
     get:
       tags: [account]
-      operationId: GET_account
+      operationId: GET_accountInfo
       summary: Get account
       description: Get owned connectors/transformations/conditions for an address.
 

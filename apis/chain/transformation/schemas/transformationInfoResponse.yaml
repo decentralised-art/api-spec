@@ -3,7 +3,7 @@
 title: TransformationInfoResponse
 type: object
 additionalProperties: false
-required: [name, args_count, owner, address]
+required: [name, args_count, runtime_code, owner, address]
 description: >
   Transformation information. The Solidity source is an execution input kept in local
   storage or a verified artifact and is never served.
@@ -18,6 +18,12 @@ properties:
     minimum: 0
     maximum: 4294967295
     description: Number of arguments (uint32), derived from the source and registered on chain.
+
+  runtime_code:
+    type: string
+    nullable: true
+    pattern: '^0x[0-9a-f]*$'
+    description: Deployed runtime bytecode as 0x-prefixed hex, or null while the registry does not hold it.
 
   owner: { $ref: "../../../../shared/schemas/address.yaml" }
 

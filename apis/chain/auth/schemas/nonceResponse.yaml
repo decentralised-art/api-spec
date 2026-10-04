@@ -3,10 +3,30 @@
 title: NonceResponse
 type: object
 additionalProperties: false
-required: [nonce]
+required: [nonce, message]
 description: Nonce response.
 
 properties:
   nonce:
     type: string
-    description: One-time nonce to be signed by the account owner.
+    pattern: "^[0-9A-Za-z]{16}$"
+    description: One-time nonce identifying `message`; submit it to `/auth`.
+
+  message:
+    type: string
+    description: >
+      EIP-4361 sign-in message for the wallet to sign with `personal_sign`.
+      It names the site with its scheme, the checksummed address, the chain ID, the nonce,
+      and when it was issued and expires.
+    example: |-
+      https://decentralised.art wants you to sign in with your Ethereum account:
+      0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+
+      Sign in to decentralised.art.
+
+      URI: https://decentralised.art
+      Version: 1
+      Chain ID: 11155111
+      Nonce: k3J9xQ2mT8vLp4Rw
+      Issued At: 2026-10-04T12:00:00Z
+      Expiration Time: 2026-10-04T12:05:00Z

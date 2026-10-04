@@ -233,11 +233,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "schemas/publishError.yaml" }
-        "409":
-          description: The registry holds something else under this name.
-          content:
-            application/json:
-              schema: { $ref: "schemas/publishError.yaml" }
         "503":
           description: Chain provider failure.
           content:

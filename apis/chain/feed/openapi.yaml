@@ -51,7 +51,7 @@ paths:
             type: integer
             minimum: 1
             maximum: 256
-          description: Page size. The current server requires this parameter.
+          description: Page size.
 
         - name: before
           in: query
@@ -75,8 +75,8 @@ paths:
             enum: [0, 1]
           description: >
             Set to `1` to include observed and safe events. Set to `0` to
-            return only finalized events. When omitted, the current server
-            includes unfinalized events.
+            return only finalized events. When omitted, unfinalized events are
+            included.
 
       responses:
         "200":

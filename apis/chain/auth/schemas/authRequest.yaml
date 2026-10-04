@@ -3,18 +3,19 @@
 title: AuthRequest
 type: object
 additionalProperties: false
-required: [address, message, signature]
+required: [address, nonce, signature]
 description: Auth request.
 
 properties:
   address: { $ref: ../../../../shared/schemas/address.yaml }
 
-  message:
+  nonce:
     type: string
-    description: >
-      Login message signed by the account owner. Must be
-      `Login nonce: <nonce>`.
+    pattern: "^[0-9A-Za-z]{16}$"
+    description: The nonce `/nonce` issued to `address`.
 
   signature:
     type: string
-    description: Wallet signature of the login message.
+    description: >
+      The wallet's `personal_sign` (EIP-191) signature of the `message`
+      issued with `nonce`, as 65-byte hex.

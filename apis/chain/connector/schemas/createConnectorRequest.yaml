@@ -25,6 +25,7 @@ properties:
     type: array
     items:
       type: integer
+      format: int32
     description: Condition arguments. Omitted means no condition arguments.
 
   static_ri:
