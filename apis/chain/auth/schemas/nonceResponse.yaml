@@ -9,7 +9,7 @@ description: Nonce response.
 properties:
   nonce:
     type: string
-    pattern: "^[0-9A-Za-z]{16}$"
+    pattern: "^[0-9a-f]{66}$"
     description: One-time nonce identifying `message`; submit it to `/auth`.
 
   message:
@@ -27,6 +27,6 @@ properties:
       URI: https://decentralised.art
       Version: 1
       Chain ID: 11155111
-      Nonce: k3J9xQ2mT8vLp4Rw
+      Nonce: 000000006ac23fc0003f9c1d27a84be6526b0d8e4c13f7a9e5d2b8c06f41e93a7d
       Issued At: 2026-10-04T12:00:00Z
       Expiration Time: 2026-10-04T12:05:00Z

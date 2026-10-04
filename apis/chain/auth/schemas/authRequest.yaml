@@ -11,7 +11,7 @@ properties:
 
   nonce:
     type: string
-    pattern: "^[0-9A-Za-z]{16}$"
+    pattern: "^[0-9a-f]{66}$"
     description: The nonce `/nonce` issued to `address`.
 
   signature:

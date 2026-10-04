@@ -3,7 +3,7 @@ openapi: 3.0.3
 
 info:
   title: decentralised.art Chain Auth API
-  version: 0.4.0
+  version: 0.5.0
   description: Chain authentication endpoints.
   license:
     name: MIT
@@ -37,7 +37,9 @@ paths:
         sign-in message for an address. Have the wallet sign `message` with
         `personal_sign`, then submit the `nonce` and the signature to `/auth`
         within five minutes. Each nonce can be redeemed once; requesting
-        another one does not invalidate those already issued.
+        another one does not invalidate those already issued. Issuing a
+        nonce stores nothing on the server: the nonce itself carries its
+        issue time and origin under the server's signature.
 
 
         The message names the site the user signs in through: the `origin`
@@ -51,13 +53,12 @@ paths:
         - name: origin
           in: query
           required: false
-          allowReserved: true
           schema:
             type: string
             example: https://decentralised.art
           description: >
             Origin of the page signing in, as `window.location.origin` gives
-            it, sent unencoded. Browsers send no `Origin` header on a
+            it, percent-encoded or not. Browsers send no `Origin` header on a
             same-origin GET, so this is how a page served from a secondary
             configured origin gets a message naming it. A value that is not a
             configured origin is refused with 400.
@@ -82,12 +83,6 @@ paths:
         
         "400":
           description: Invalid address, or an `origin` that is not a configured sign-in origin.
-          content:
-            application/json:
-              schema: { $ref: ../../../shared/schemas/error.yaml }
-
-        "503":
-          description: Too many sign-in messages are awaiting `/auth`; retry shortly.
           content:
             application/json:
               schema: { $ref: ../../../shared/schemas/error.yaml }
@@ -120,13 +115,10 @@ paths:
 
       responses:
         "200":
-          description: Authentication successful
-          headers:
-            Authorization:
-              description: Bearer token for protected chain endpoints.
-              schema:
-                type: string
-                example: Bearer <access_token>
+          description: >
+            Authentication successful. Send `access_token` as
+            `Authorization: Bearer <access_token>` to protected chain
+            endpoints; it expires five minutes after it is issued.
           content:
             application/json:
               schema: { $ref: schemas/authResponse.yaml }
